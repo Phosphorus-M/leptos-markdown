@@ -58,7 +58,7 @@ pub mod debug {
 pub fn Markdown(
     /// the markdown text to render
     #[prop(into)]
-    src: MaybeSignal<String>,
+    src: String,
 
     /// the callback called when a component is clicked.
     /// if you want to controll what happens when a link is clicked,
@@ -99,25 +99,23 @@ pub fn Markdown(
 
     let options = parse_options.unwrap_or(Options::all());
 
+    let mut stream: Vec<_> = ParserOffsetIter::new_ext(src.as_str(), options, wikilinks.get())
+        .collect();
 
-    view! {
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css" integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI" crossorigin="anonymous"/>
-        <div style="width:100%; padding-left: 10px"> 
-            {move || src.with( |x| {
-                let mut stream: Vec<_> = ParserOffsetIter::new_ext(x, options, wikilinks())
-                    .collect();
-
-                if hard_line_breaks() {
-                    for (r, _) in &mut stream {
-                        if *r == Event::SoftBreak {
-                            *r = Event::HardBreak
-                        }
-                    }
-                }
-
-                Renderer::new(&context, &mut stream.into_iter()).collect_view()
-                })
+    if hard_line_breaks.get() {
+        for (r, _) in &mut stream {
+            if *r == Event::SoftBreak {
+                *r = Event::HardBreak
             }
+        }
+    }
+    view! {
+        <div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css" integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI" crossorigin="anonymous"/>
+            <div style="width:100%; padding-left: 10px"> 
+                {Renderer::new(&context, &mut stream.into_iter()).collect_view()
+                }
+            </div>
         </div>
     }
 }

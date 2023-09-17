@@ -3,14 +3,13 @@ use leptos::*;
 
 use core::ops::Range;
 
-use katex;
 use syntect::highlighting::{Theme, ThemeSet};
 use syntect::parsing::SyntaxSet;
 
 use web_sys::MouseEvent;
 
 use pulldown_cmark_wikilink::{
-    Alignment, CodeBlockKind, Event, HeadingLevel, MathMode, Tag, TagEnd,
+    Alignment, CodeBlockKind, Event, HeadingLevel, Tag, TagEnd,
 };
 
 use super::{LinkDescription, MarkdownMouseEvent};
@@ -130,7 +129,11 @@ where
             HardBreak => Ok(view! {<br/>}.into_any()),
             Rule => Ok(render_rule(self.context, range)),
             TaskListMarker(m) => Ok(render_tasklist_marker(self.context, m, range)),
-            Math(disp, content) => render_maths(self.context, &content, &disp, range),
+            Math(_, content) => Ok(view!{
+                <div class="math">
+                    {render_text(self.context, &content, range)}
+                </div>
+            }.into_any()),
         };
 
         Some(rendered.unwrap_or_else(|e| {
@@ -375,35 +378,6 @@ fn render_heading<I: IntoView>(level: HeadingLevel, content: I) -> Html {
         H4 => view! {<h4>{content}</h4>}.into_any(),
         H5 => view! {<h5>{content}</h5>}.into_any(),
         H6 => view! {<h6>{content}</h6>}.into_any(),
-    }
-}
-
-/// `render_maths(content)` returns a html node
-/// with the latex content `content` compiled inside
-fn render_maths(
-    context: &RenderContext,
-    content: &str,
-    display_mode: &MathMode,
-    range: Range<usize>,
-) -> Result<Html, HtmlError> {
-    let opts = katex::Opts::builder()
-        .display_mode(*display_mode == MathMode::Display)
-        .build()
-        .unwrap();
-
-    let class_name = match display_mode {
-        MathMode::Inline => "math-inline",
-        MathMode::Display => "math-flow",
-    };
-
-    let callback = make_callback(context, range);
-
-    match katex::render_with_opts(content, opts) {
-        Ok(_) => Ok(view! {
-            <span inner_html=x class=class_name on:click=callback></span>
-        }
-        .into_any()),
-        Err(_) => HtmlError::err("invalid math"),
     }
 }
 
