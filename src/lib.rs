@@ -110,13 +110,11 @@ pub fn Markdown(
         }
     }
     view! {
-        <div>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css" integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI" crossorigin="anonymous"/>
-            <div style="width:100%; padding-left: 10px"> 
-                {Renderer::new(&context, &mut stream.into_iter()).collect_view()
-                }
+        <>
+            <div class="markdown-container"> 
+                {Renderer::new(&context, &mut stream.into_iter()).collect_view()}
             </div>
-        </div>
+        </>
     }
 }
 
