@@ -1,7 +1,7 @@
 use leptos::*;
 use leptos_markdown::{Markdown, MarkdownMouseEvent};
 
-static MARKDOWN_SOURCE : &str = r#"
+static MARKDOWN_SOURCE: &str = r#"
 # Interactive markdown experiment
 ## Goal
 This page illustrates how you can use the `onclick` property of the `Markdown` component in order to add some interactivity in your markdown
@@ -22,7 +22,6 @@ $$\sum_{n=-\infty}^{+\infty}c_n e^{inx}$$
 
 "#;
 
-
 #[component]
 fn App(cx: Scope) -> impl IntoView {
     let (position, set_position) = create_signal(cx, 0..0);
@@ -31,9 +30,9 @@ fn App(cx: Scope) -> impl IntoView {
 
     let before = move || &MARKDOWN_SOURCE[0..position().start];
     let middle = move || &MARKDOWN_SOURCE[position()];
-    let after =  move || &MARKDOWN_SOURCE[position().end..];
+    let after = move || &MARKDOWN_SOURCE[position().end..];
 
-    view!{cx,
+    view! {cx,
         <div>
             <Markdown src=MARKDOWN_SOURCE on_click=onclick/>
                 <br/>
@@ -50,5 +49,5 @@ fn App(cx: Scope) -> impl IntoView {
 
 fn main() {
     console_error_panic_hook::set_once();
-    mount_to_body(|cx| view!{cx, <App/>})
+    mount_to_body(|cx| view! {cx, <App/>})
 }

@@ -56,8 +56,6 @@ pub mod debug {
 
 #[component]
 pub fn Markdown(
-    cx: Scope,
-
     /// the markdown text to render
     #[prop(into)]
     src: MaybeSignal<String>,
@@ -94,7 +92,6 @@ pub fn Markdown(
     ) -> impl IntoView 
      {
     let context = RenderContext::new(
-        cx,
         theme,
         on_click,
         render_links,
@@ -102,10 +99,8 @@ pub fn Markdown(
 
     let options = parse_options.unwrap_or(Options::all());
 
-    #[cfg(feature="debug")]
-    let set_debug_info = use_context::<debug::EventInfo>(cx);
 
-    view! {cx,
+    view! {
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css" integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI" crossorigin="anonymous"/>
         <div style="width:100%; padding-left: 10px"> 
             {move || src.with( |x| {
@@ -120,14 +115,7 @@ pub fn Markdown(
                     }
                 }
 
-                #[cfg(feature="debug")]
-                set_debug_info.map(|setter| (setter.0)(
-                        stream.iter()
-                                    .map(|(e, r)| format!("{r:?}: {e:?}"))
-                                    .collect())
-                );
-
-                Renderer::new(&context, &mut stream.into_iter()).collect_view(cx)
+                Renderer::new(&context, &mut stream.into_iter()).collect_view()
                 })
             }
         </div>

@@ -50,12 +50,12 @@ Even todo lists:
 
 #[component]
 fn App(cx: Scope) -> impl IntoView {
-    view!{cx,
+    view! {cx,
         <Markdown src=MARKDOWN_SOURCE wikilinks=true/>
     }
 }
 
 fn main() {
     console_error_panic_hook::set_once();
-    mount_to_body(|cx| view!{cx, <App/>})
+    mount_to_body(|cx| view! {cx, <App/>})
 }
